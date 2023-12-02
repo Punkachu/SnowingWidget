@@ -80,7 +80,10 @@ class _SnowWidgetState extends State<SnowWidget>
 
   @override
   void didUpdateWidget(covariant SnowWidget oldWidget) {
-    init(hasInit: true);
+    if (hasParametersChanged(oldWidget)) {
+      print("didUpdateWidget");
+      init(hasInit: true);
+    }
     super.didUpdateWidget(oldWidget);
   }
 
@@ -90,8 +93,17 @@ class _SnowWidgetState extends State<SnowWidget>
 
     // Initialize snowballs and start animation in didChangeDependencies
     if (_snows.isEmpty) {
+      print(
+          "Initialize snowballs and start animation in didChangeDependencies");
       init();
     }
+  }
+
+  bool hasParametersChanged(covariant SnowWidget oldWidget) {
+    return oldWidget.startSnowing != widget.startSnowing ||
+        oldWidget.totalSnow != widget.totalSnow ||
+        oldWidget.maxRadius != widget.maxRadius ||
+        oldWidget.snowColor != widget.snowColor;
   }
 
   init({bool hasInit = false}) async {
