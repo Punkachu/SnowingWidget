@@ -11,21 +11,22 @@ class SnowWidget extends StatefulWidget {
   final bool isRunning;
   final double maxRadius;
   final Color snowColor;
+  final bool hasSpinningEffect;
 
-  const SnowWidget({
-    Key? key,
-    required this.totalSnow,
-    required this.speed,
-    required this.isRunning,
-    required this.snowColor,
-    this.maxRadius = 4,
-  }) : super(key: key);
+  const SnowWidget(
+      {Key? key,
+      required this.totalSnow,
+      required this.speed,
+      required this.isRunning,
+      required this.snowColor,
+      this.maxRadius = 4,
+      this.hasSpinningEffect = true})
+      : super(key: key);
 
   _SnowWidgetState createState() => _SnowWidgetState();
 }
 
-class _SnowWidgetState extends State<SnowWidget>
-    with SingleTickerProviderStateMixin {
+class _SnowWidgetState extends State<SnowWidget> with TickerProviderStateMixin {
   late final AnimationController controller;
   late final Animation animation;
 
@@ -42,32 +43,44 @@ class _SnowWidgetState extends State<SnowWidget>
   }
 
   @override
+  void didUpdateWidget(covariant SnowWidget oldWidget) {
+    init(hasInit: true);
+    super.didUpdateWidget(oldWidget);
+  }
+
+  @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     // Initialize snowballs and start animation in didChangeDependencies
     if (_snows.isEmpty) {
+      print("init loggin");
       init();
     }
   }
 
-  init() {
+  init({bool hasInit = false}) async {
     W = MediaQuery.of(context).size.width;
     H = MediaQuery.of(context).size.height;
 
-    controller = AnimationController(
-        lowerBound: 0,
-        upperBound: 1,
-        vsync: this,
-        duration: const Duration(milliseconds: 2000))
-      ..addListener(() {
-        if (mounted) {
-          setState(() {
-            update();
-          });
-        }
-      });
+    if (hasInit) {
+      _snows.clear();
+      await _createSnowBall();
+    } else {
+      controller = AnimationController(
+          lowerBound: 0,
+          upperBound: 1,
+          vsync: this,
+          duration: const Duration(milliseconds: 2000))
+        ..addListener(() {
+          if (mounted) {
+            setState(() {
+              update();
+            });
+          }
+        });
 
-    controller.repeat();
+      controller.repeat();
+    }
   }
 
   @override
@@ -173,6 +186,7 @@ class _SnowWidgetState extends State<SnowWidget>
           isRunning: widget.isRunning,
           snows: _snows,
           snowColor: widget.snowColor,
+          hasSpinningEffect: widget.hasSpinningEffect,
         ),
       );
     });

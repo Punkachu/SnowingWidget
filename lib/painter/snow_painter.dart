@@ -6,11 +6,13 @@ class SnowPainter extends CustomPainter {
   final List<SnowBall> snows;
   final bool isRunning;
   final Color snowColor;
+  final bool hasSpinningEffect;
 
   SnowPainter({
     required this.isRunning,
     required this.snows,
     required this.snowColor,
+    required this.hasSpinningEffect,
   });
 
   @override
@@ -21,11 +23,11 @@ class SnowPainter extends CustomPainter {
       ..shader = LinearGradient(
         colors: [snowColor, Colors.white60],
         begin: Alignment.topLeft,
-        end: Alignment.topRight,
+        end: Alignment.bottomRight,
         tileMode: TileMode.mirror,
       ).createShader(Rect.fromCircle(
         center: const Offset(0, 0),
-        radius: 15,
+        radius: hasSpinningEffect ? 15 : 0,
       ));
 
     for (int i = 0; i < snows.length; i++) {
