@@ -10,6 +10,15 @@ class StoryBookApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    List<MaterialColor> colors = [];
+    colors.add(const MaterialColor(
+      500,
+      <int, Color>{
+        500: Color(0xFFFFFFFF),
+      },
+    ));
+    colors.addAll(Colors.primaries);
+
     return Storybook(
       wrapperBuilder: (BuildContext _, Widget? child) => MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -50,6 +59,9 @@ class StoryBookApp extends StatelessWidget {
               final bool startSnowing = context.knobs
                   .boolean(label: "Start Snowing ?", initial: false);
 
+              final int indexColors = context.knobs.sliderInt(
+                  label: "Snow Colors", initial: 0, max: colors.length);
+
               return Scaffold(
                 body: Container(
                   width: width,
@@ -72,7 +84,9 @@ class StoryBookApp extends StatelessWidget {
                           totalSnow: snowBalls,
                           speed: 0.1 + speed,
                           maxRadius: radius,
-                          snowColor: Colors.white,
+                          snowColor: indexColors == 0
+                              ? Colors.white
+                              : colors[indexColors],
                           hasSpinningEffect: spinning,
                           startSnowing: startSnowing,
                         ),
