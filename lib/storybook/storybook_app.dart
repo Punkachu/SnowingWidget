@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:storybook_flutter/storybook_flutter.dart';
 
-import '../widget/snowing.dart';
+import '../widget/snow_widget.dart';
 
 class StoryBookApp extends StatelessWidget {
   StoryBookApp({Key? key}) : super(key: key);

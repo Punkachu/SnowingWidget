@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:snow_widget/widget/snowing.dart';
+import 'package:snow_widget/widget/snow_widget.dart';
 
 class SnowingApp extends StatelessWidget {
   const SnowingApp({super.key});
