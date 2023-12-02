@@ -80,9 +80,9 @@ class _SnowWidgetState extends State<SnowWidget>
 
   @override
   void didUpdateWidget(covariant SnowWidget oldWidget) {
-    if (hasParametersChanged(oldWidget)) {
+    if (_hasParametersChanged(oldWidget)) {
       print("didUpdateWidget");
-      init(hasInit: true);
+      init(hasInit: true, previousTotalSnow: oldWidget.totalSnow);
     }
     super.didUpdateWidget(oldWidget);
   }
@@ -99,21 +99,46 @@ class _SnowWidgetState extends State<SnowWidget>
     }
   }
 
-  bool hasParametersChanged(covariant SnowWidget oldWidget) {
+  bool _hasParametersChanged(covariant SnowWidget oldWidget) {
+    // check only parameters that are used for initialization
     return oldWidget.startSnowing != widget.startSnowing ||
         oldWidget.totalSnow != widget.totalSnow ||
         oldWidget.maxRadius != widget.maxRadius ||
         oldWidget.snowColor != widget.snowColor;
   }
 
-  init({bool hasInit = false}) async {
+  Future<void> _replaceSnowBallWithNewParameters(int previousTotalSnow) async {
+    List<SnowBall> copySnow = _snows;
+
+    for (int i = 0; i < previousTotalSnow; i++) {
+      final SnowBall snow = copySnow.elementAt(i);
+      final double radius = _rnd.nextDouble() * widget.maxRadius + 2;
+      final double generatedRadius = _rnd.nextDouble() * widget.speed;
+      final double speed =
+          generatedRadius >= (widget.maxRadius - widget.maxRadius / 4)
+              ? generatedRadius
+              : generatedRadius / 3;
+
+      _snows[i] = SnowBall(
+        x: snow.x,
+        y: snow.y,
+        radius: radius,
+        density: speed,
+      );
+    }
+  }
+
+  init({bool hasInit = false, int previousTotalSnow = 0}) async {
     W = MediaQuery.of(context).size.width;
     H = MediaQuery.of(context).size.height;
 
     if (hasInit) {
       /// only reset balls after the first init is done
-      _snows.clear();
-      await _createSnowBall();
+      await _replaceSnowBallWithNewParameters(previousTotalSnow);
+      final int newTotalSnow = widget.totalSnow - previousTotalSnow;
+      if (newTotalSnow > 0) {
+        await _createSnowBall(newBallToAdd: newTotalSnow);
+      }
     } else {
       controller = AnimationController(
           lowerBound: 0,
@@ -139,10 +164,10 @@ class _SnowWidgetState extends State<SnowWidget>
     super.dispose();
   }
 
-  Future<void> _createSnowBall() async {
+  Future<void> _createSnowBall({required int newBallToAdd}) async {
     final int inverseYAxis = widget.startSnowing ? -1 : 1;
 
-    for (int i = 0; i < widget.totalSnow; i++) {
+    for (int i = 0; i < newBallToAdd; i++) {
       final double radius = _rnd.nextDouble() * widget.maxRadius + 2;
       final double generatedRadius = _rnd.nextDouble() * widget.speed;
       final double speed =
@@ -172,7 +197,7 @@ class _SnowWidgetState extends State<SnowWidget>
     angle += 0.01;
 
     if (widget.totalSnow != _snows.length) {
-      await _createSnowBall();
+      await _createSnowBall(newBallToAdd: widget.totalSnow);
     }
 
     for (int i = 0; i < widget.totalSnow; i++) {
