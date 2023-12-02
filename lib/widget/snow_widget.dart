@@ -6,27 +6,63 @@ import '../models/snow_ball.dart';
 import '../painter/snow_painter.dart';
 
 class SnowWidget extends StatefulWidget {
+  ///
+  /// Give the amount of particles to display on the screen
+  ///
   final int totalSnow;
+
+  ///
+  /// Give the speed of the snow particles
+  /// note that the velocity of each ball will depend on the its size
+  /// (radius)
+  /// The bigger snow balls will fall faster and the smaller snow balls will
+  /// fall slower
+  ///
   final double speed;
+
+  ///
+  /// Tells whether the animation is starting or not
+  ///
   final bool isRunning;
+
+  ///
+  /// Give the max radius size of the snow ball object
+  ///
   final double maxRadius;
+
+  ///
+  /// Give the main color of the Snowball
+  ///
   final Color snowColor;
+
+  ///
+  /// Display the linear gradient with  [snowColor] and [Colors.white60] on the snowball
+  /// if true else just display given [snowColor]
+  ///
   final bool hasSpinningEffect;
 
-  const SnowWidget(
-      {Key? key,
-      required this.totalSnow,
-      required this.speed,
-      required this.isRunning,
-      required this.snowColor,
-      this.maxRadius = 4,
-      this.hasSpinningEffect = true})
-      : super(key: key);
+  ///
+  /// Start the snowing animation from the top if set to true
+  /// otherwise start from the whole screens boundaries
+  ///
+  final bool startSnowing;
+
+  const SnowWidget({
+    Key? key,
+    required this.totalSnow,
+    required this.speed,
+    required this.isRunning,
+    required this.snowColor,
+    this.maxRadius = 4,
+    this.hasSpinningEffect = true,
+    this.startSnowing = false,
+  }) : super(key: key);
 
   _SnowWidgetState createState() => _SnowWidgetState();
 }
 
-class _SnowWidgetState extends State<SnowWidget> with TickerProviderStateMixin {
+class _SnowWidgetState extends State<SnowWidget>
+    with SingleTickerProviderStateMixin {
   late final AnimationController controller;
   late final Animation animation;
 
@@ -51,9 +87,9 @@ class _SnowWidgetState extends State<SnowWidget> with TickerProviderStateMixin {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+
     // Initialize snowballs and start animation in didChangeDependencies
     if (_snows.isEmpty) {
-      print("init loggin");
       init();
     }
   }
@@ -63,6 +99,7 @@ class _SnowWidgetState extends State<SnowWidget> with TickerProviderStateMixin {
     H = MediaQuery.of(context).size.height;
 
     if (hasInit) {
+      /// only reset balls after the first init is done
       _snows.clear();
       await _createSnowBall();
     } else {
@@ -90,7 +127,9 @@ class _SnowWidgetState extends State<SnowWidget> with TickerProviderStateMixin {
     super.dispose();
   }
 
-  _createSnowBall() async {
+  Future<void> _createSnowBall() async {
+    final int inverseYAxis = widget.startSnowing ? -1 : 1;
+
     for (int i = 0; i < widget.totalSnow; i++) {
       final double radius = _rnd.nextDouble() * widget.maxRadius + 2;
       final double generatedRadius = _rnd.nextDouble() * widget.speed;
@@ -100,12 +139,16 @@ class _SnowWidgetState extends State<SnowWidget> with TickerProviderStateMixin {
               : generatedRadius / 3;
 
       final double x = _rnd.nextDouble() * W;
-      final double y = _rnd.nextDouble() * H;
+
+      /// if [widget.startSnowing] is true the we reverse the Y axis to give
+      /// the feeling of starting snow.
+      /// otherwise just keep the Y axis as is.
+      final double y = _rnd.nextDouble() * H * inverseYAxis;
 
       _snows.add(
         SnowBall(
           x: x,
-          y: -y,
+          y: y,
           radius: radius,
           density: speed,
         ),

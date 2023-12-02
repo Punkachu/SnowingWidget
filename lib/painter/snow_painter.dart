@@ -17,18 +17,22 @@ class SnowPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    Paint paint = Paint();
+    Paint paint;
 
-    paint = Paint()
-      ..shader = LinearGradient(
-        colors: [snowColor, Colors.white60],
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-        tileMode: TileMode.mirror,
-      ).createShader(Rect.fromCircle(
-        center: const Offset(0, 0),
-        radius: hasSpinningEffect ? 15 : 0,
-      ));
+    if (hasSpinningEffect) {
+      paint = Paint()
+        ..shader = LinearGradient(
+          colors: [snowColor, Colors.white60],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          tileMode: TileMode.mirror,
+        ).createShader(Rect.fromCircle(
+          center: const Offset(0, 0),
+          radius: 15,
+        ));
+    } else {
+      paint = Paint()..color = snowColor;
+    }
 
     for (int i = 0; i < snows.length; i++) {
       SnowBall snow = snows[i];

@@ -47,6 +47,9 @@ class StoryBookApp extends StatelessWidget {
               final bool spinning =
                   context.knobs.boolean(label: "Can Spin ?", initial: true);
 
+              final bool startSnowing = context.knobs
+                  .boolean(label: "Start Snowing ?", initial: false);
+
               return Scaffold(
                 body: Container(
                   width: width,
@@ -71,6 +74,7 @@ class StoryBookApp extends StatelessWidget {
                           maxRadius: radius,
                           snowColor: Colors.white,
                           hasSpinningEffect: spinning,
+                          startSnowing: startSnowing,
                         ),
                       ),
                     ],
