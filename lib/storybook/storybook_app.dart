@@ -60,7 +60,7 @@ class StoryBookApp extends StatelessWidget {
                   .boolean(label: "Start Snowing ?", initial: false);
 
               final int indexColors = context.knobs.sliderInt(
-                  label: "Snow Colors", initial: 0, max: colors.length);
+                  label: "Snow Colors", initial: 0, max: colors.length - 1);
 
               return Scaffold(
                 body: Container(

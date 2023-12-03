@@ -144,7 +144,7 @@ class _SnowWidgetState extends State<SnowWidget>
           lowerBound: 0,
           upperBound: 1,
           vsync: this,
-          duration: const Duration(milliseconds: 2000))
+          duration: const Duration(milliseconds: 5000))
         ..addListener(() {
           if (mounted) {
             setState(() {
@@ -204,21 +204,19 @@ class _SnowWidgetState extends State<SnowWidget>
       SnowBall snow = _snows[i];
 
       snow.y +=
-          (cos(angle + _rnd.nextDouble() + snow.density) + snow.radius / 2)
-                  .abs() *
-              widget.speed;
-      snow.x += sin(_rnd.nextDouble() + snow.radius) * 2 * widget.speed;
+          (cos(angle + snow.density) + snow.radius / 2).abs() * widget.speed;
+      snow.x += sin(snow.radius) * 2 * widget.speed;
 
       if (snow.x > W + (snow.radius * 2) ||
           snow.x < -(snow.radius * 2) ||
           snow.y > H) {
-        if (i % 4 > 0) {
+        if (i % 6 > 0) {
           _snows[i] = SnowBall(
               x: _rnd.nextDouble() * W,
               y: -10,
               radius: snow.radius,
               density: snow.density);
-        } else if (i % 5 > 0) {
+        } else if (i % 8 > 0) {
           _snows[i] = SnowBall(
               x: (_rnd.nextDouble() * W) - _rnd.nextDouble() * 10,
               y: 0,
