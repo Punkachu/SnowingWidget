@@ -41,8 +41,9 @@ class StoryBookApp extends StatelessWidget {
 
               final int snowBalls = context.knobs.sliderInt(
                 label: "Number of ball",
-                min: 50,
+                min: 0,
                 max: 500,
+                initial: 50,
               );
 
               final double speed = context.knobs
@@ -57,7 +58,7 @@ class StoryBookApp extends StatelessWidget {
                   context.knobs.boolean(label: "Can Spin ?", initial: true);
 
               final bool startSnowing = context.knobs
-                  .boolean(label: "Start Snowing ?", initial: false);
+                  .boolean(label: "Start Snowing ?", initial: true);
 
               final int indexColors = context.knobs.sliderInt(
                   label: "Snow Colors", initial: 0, max: colors.length - 1);
@@ -79,16 +80,19 @@ class StoryBookApp extends StatelessWidget {
                   child: Stack(
                     children: <Widget>[
                       Positioned.fill(
-                        child: SnowWidget(
-                          isRunning: true,
-                          totalSnow: snowBalls,
-                          speed: 0.1 + speed,
-                          maxRadius: radius,
-                          snowColor: indexColors == 0
-                              ? Colors.white
-                              : colors[indexColors],
-                          hasSpinningEffect: spinning,
-                          startSnowing: startSnowing,
+                        child: Transform.rotate(
+                          angle: 360,
+                          child: SnowWidget(
+                            isRunning: true,
+                            totalSnow: snowBalls,
+                            speed: 0.1 + speed,
+                            maxRadius: radius,
+                            snowColor: indexColors == 0
+                                ? Colors.white
+                                : colors[indexColors],
+                            hasSpinningEffect: spinning,
+                            startSnowing: startSnowing,
+                          ),
                         ),
                       ),
                     ],

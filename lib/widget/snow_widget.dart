@@ -81,7 +81,6 @@ class _SnowWidgetState extends State<SnowWidget>
   @override
   void didUpdateWidget(covariant SnowWidget oldWidget) {
     if (_hasParametersChanged(oldWidget)) {
-      print("didUpdateWidget");
       init(hasInit: true, previousTotalSnow: oldWidget.totalSnow);
     }
     super.didUpdateWidget(oldWidget);
@@ -93,8 +92,6 @@ class _SnowWidgetState extends State<SnowWidget>
 
     // Initialize snowballs and start animation in didChangeDependencies
     if (_snows.isEmpty) {
-      print(
-          "Initialize snowballs and start animation in didChangeDependencies");
       init();
     }
   }
@@ -104,7 +101,8 @@ class _SnowWidgetState extends State<SnowWidget>
     return oldWidget.startSnowing != widget.startSnowing ||
         oldWidget.totalSnow != widget.totalSnow ||
         oldWidget.maxRadius != widget.maxRadius ||
-        oldWidget.snowColor != widget.snowColor;
+        oldWidget.snowColor != widget.snowColor ||
+        oldWidget.startSnowing != widget.startSnowing;
   }
 
   Future<void> _replaceSnowBallWithNewParameters(int previousTotalSnow) async {
@@ -138,6 +136,8 @@ class _SnowWidgetState extends State<SnowWidget>
       final int newTotalSnow = widget.totalSnow - previousTotalSnow;
       if (newTotalSnow > 0) {
         await _createSnowBall(newBallToAdd: newTotalSnow);
+      } else {
+        _snows.removeRange(0, newTotalSnow.abs());
       }
     } else {
       controller = AnimationController(
@@ -170,7 +170,7 @@ class _SnowWidgetState extends State<SnowWidget>
     for (int i = 0; i < newBallToAdd; i++) {
       final double radius = _rnd.nextDouble() * widget.maxRadius + 2;
       final double generatedRadius = _rnd.nextDouble() * widget.speed;
-      final double speed =
+      final double density =
           generatedRadius >= (widget.maxRadius - widget.maxRadius / 4)
               ? generatedRadius
               : generatedRadius / 3;
@@ -187,7 +187,7 @@ class _SnowWidgetState extends State<SnowWidget>
           x: x,
           y: y,
           radius: radius,
-          density: speed,
+          density: density,
         ),
       );
     }
@@ -201,15 +201,16 @@ class _SnowWidgetState extends State<SnowWidget>
     }
 
     for (int i = 0; i < widget.totalSnow; i++) {
-      SnowBall snow = _snows[i];
+      SnowBall snow = _snows.elementAt(i);
 
       snow.y +=
           (cos(angle + snow.density) + snow.radius / 2).abs() * widget.speed;
       snow.x += sin(snow.radius) * 2 * widget.speed;
 
-      if (snow.x > W + (snow.radius * 2) ||
-          snow.x < -(snow.radius * 2) ||
-          snow.y > H) {
+      if (snow.x > W + (snow.radius) ||
+          snow.x < -(snow.radius) ||
+          snow.y > H + (snow.radius) ||
+          snow.y < -(snow.radius)) {
         if (i % 6 > 0) {
           _snows[i] = SnowBall(
               x: _rnd.nextDouble() * W,
