@@ -20,7 +20,7 @@ class StoryBookApp extends StatelessWidget {
     colors.addAll(Colors.primaries);
 
     return Storybook(
-      wrapperBuilder: (BuildContext _, Widget? child) => MaterialApp(
+      wrapperBuilder: (BuildContext context, Widget? child) => MaterialApp(
         debugShowCheckedModeBanner: false,
         home: child,
       ),
@@ -31,12 +31,11 @@ class StoryBookApp extends StatelessWidget {
             description: 'Snow ball generated',
             builder: (BuildContext context) {
               final double width = context.knobs
-                  .sliderInt(label: "width", initial: 2000, min: 200, max: 4000)
+                  .sliderInt(label: "width", initial: 800, min: 200, max: 1000)
                   .toDouble();
 
               final double height = context.knobs
-                  .sliderInt(
-                      label: "height", initial: 2000, min: 200, max: 4000)
+                  .sliderInt(label: "height", initial: 800, min: 200, max: 1000)
                   .toDouble();
 
               final int snowBalls = context.knobs.sliderInt(
@@ -63,6 +62,9 @@ class StoryBookApp extends StatelessWidget {
               final int indexColors = context.knobs.sliderInt(
                   label: "Snow Colors", initial: 0, max: colors.length - 1);
 
+              final bool linearFalls = context.knobs
+                  .boolean(label: "Linear Fall Off ☔️ ?", initial: false);
+
               return Scaffold(
                 body: Container(
                   width: width,
@@ -70,29 +72,27 @@ class StoryBookApp extends StatelessWidget {
                   decoration: const BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
-                        Color(0xFF002C7E),
                         Color(0xFF0D0C2F),
+                        Color(0xFF002C7E),
                       ],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
                     ),
                   ),
                   child: Stack(
                     children: <Widget>[
                       Positioned.fill(
-                        child: Transform.rotate(
-                          angle: 360,
-                          child: SnowWidget(
-                            isRunning: true,
-                            totalSnow: snowBalls,
-                            speed: 0.1 + speed,
-                            maxRadius: radius,
-                            snowColor: indexColors == 0
-                                ? Colors.white
-                                : colors[indexColors],
-                            hasSpinningEffect: spinning,
-                            startSnowing: startSnowing,
-                          ),
+                        child: SnowWidget(
+                          isRunning: true,
+                          totalSnow: snowBalls,
+                          speed: 0.1 + speed,
+                          maxRadius: radius,
+                          snowColor: indexColors == 0
+                              ? Colors.white
+                              : colors[indexColors],
+                          hasSpinningEffect: spinning,
+                          startSnowing: startSnowing,
+                          linearFallOff: linearFalls,
                         ),
                       ),
                     ],

@@ -47,6 +47,11 @@ class SnowWidget extends StatefulWidget {
   ///
   final bool startSnowing;
 
+  ///
+  /// If true , set a linear fall off otherwise stormy falls
+  ///
+  final bool linearFallOff;
+
   const SnowWidget({
     Key? key,
     required this.totalSnow,
@@ -54,6 +59,7 @@ class SnowWidget extends StatefulWidget {
     required this.isRunning,
     required this.snowColor,
     this.maxRadius = 4,
+    this.linearFallOff = false,
     this.hasSpinningEffect = true,
     this.startSnowing = false,
   }) : super(key: key);
@@ -169,11 +175,7 @@ class _SnowWidgetState extends State<SnowWidget>
 
     for (int i = 0; i < newBallToAdd; i++) {
       final double radius = _rnd.nextDouble() * widget.maxRadius + 2;
-      final double generatedRadius = _rnd.nextDouble() * widget.speed;
-      final double density =
-          generatedRadius >= (widget.maxRadius - widget.maxRadius / 4)
-              ? generatedRadius
-              : generatedRadius / 3;
+      final double density = _rnd.nextDouble() * widget.speed;
 
       final double x = _rnd.nextDouble() * W;
 
@@ -201,12 +203,14 @@ class _SnowWidgetState extends State<SnowWidget>
     }
 
     for (int i = 0; i < widget.totalSnow; i++) {
-      SnowBall snow = _snows.elementAt(i);
+      final SnowBall snow = _snows.elementAt(i);
+      final double sinX = widget.linearFallOff ? snow.density : snow.radius;
 
-      snow.y +=
-          (cos(angle + snow.density) + snow.radius / 2).abs() * widget.speed;
-      snow.x += sin(snow.radius) * 2 * widget.speed;
+      /// make the snow heavier, faster for bigger snow balls
+      snow.y += (cos(angle + snow.density) + snow.radius).abs() * widget.speed;
+      snow.x += sin(sinX) * 2 * widget.speed;
 
+      // If the flake is exiting parent's size
       if (snow.x > W + (snow.radius) ||
           snow.x < -(snow.radius) ||
           snow.y > H + (snow.radius) ||
@@ -223,23 +227,6 @@ class _SnowWidgetState extends State<SnowWidget>
               y: 0,
               radius: snow.radius,
               density: snow.density);
-        } else {
-          // If the flake is exiting
-          if (sin(angle) > 0) {
-            // From the left
-            _snows[i] = SnowBall(
-                x: -5,
-                y: _rnd.nextDouble() * H,
-                radius: snow.radius,
-                density: snow.density);
-          } else {
-            // From the right
-            _snows[i] = SnowBall(
-                x: W + 5,
-                y: _rnd.nextDouble() * H,
-                radius: snow.radius,
-                density: snow.density);
-          }
         }
       }
     }
