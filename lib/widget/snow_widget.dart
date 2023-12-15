@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import '../models/snow_ball.dart';
 import '../painter/snow_painter.dart';
 
+const double angleIncrementation = 0.01;
+
 class SnowWidget extends StatefulWidget {
   ///
   /// Give the amount of particles to display on the screen
@@ -196,7 +198,7 @@ class _SnowWidgetState extends State<SnowWidget>
   }
 
   update() async {
-    angle += 0.01;
+    angle += angleIncrementation;
 
     if (widget.totalSnow != _snows.length) {
       await _createSnowBall(newBallToAdd: widget.totalSnow);
@@ -210,21 +212,27 @@ class _SnowWidgetState extends State<SnowWidget>
       snow.y += (cos(angle + snow.density) + snow.radius).abs() * widget.speed;
       snow.x += sin(sinX) * 2 * widget.speed;
 
-      // If the flake is exiting parent's size
+      // If the flake is exiting widget parent's frame
       if (snow.x > W + (snow.radius) ||
           snow.x < -(snow.radius) ||
           snow.y > H + (snow.radius) ||
           snow.y < -(snow.radius)) {
-        if (i % 6 > 0) {
+        if (i % 4 > 0) {
           _snows[i] = SnowBall(
               x: _rnd.nextDouble() * W,
               y: -10,
               radius: snow.radius,
               density: snow.density);
-        } else if (i % 8 > 0) {
+        } else if (i % 5 > 0) {
           _snows[i] = SnowBall(
               x: (_rnd.nextDouble() * W) - _rnd.nextDouble() * 10,
               y: 0,
+              radius: snow.radius,
+              density: snow.density);
+        } else {
+          _snows[i] = SnowBall(
+              x: (_rnd.nextDouble() * W) - _rnd.nextDouble() * 10,
+              y: -_rnd.nextDouble() * 10,
               radius: snow.radius,
               density: snow.density);
         }
