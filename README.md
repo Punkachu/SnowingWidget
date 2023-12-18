@@ -5,8 +5,6 @@ Snowing Widget to animate backgrounds in Flutter
 
 ![Snowing Menu](screen_shots/snowing_menu.gif "Snowing Widget Menu Example")
 
-![Iphone Snowing Background](screen_shots/mock_iphone.png "Iphone Snowing Background")
-
 # How to use it ?
 ```@dart
 import 'package:flutter/material.dart';
