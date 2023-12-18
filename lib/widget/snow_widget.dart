@@ -134,7 +134,7 @@ class _SnowWidgetState extends State<SnowWidget>
     }
   }
 
-  init({bool hasInit = false, int previousTotalSnow = 0}) async {
+  Future<void> init({bool hasInit = false, int previousTotalSnow = 0}) async {
     W = MediaQuery.of(context).size.width;
     H = MediaQuery.of(context).size.height;
 
@@ -197,7 +197,7 @@ class _SnowWidgetState extends State<SnowWidget>
     }
   }
 
-  update() async {
+  Future<void> update() async {
     angle += angleIncrementation;
 
     if (widget.totalSnow != _snows.length) {
